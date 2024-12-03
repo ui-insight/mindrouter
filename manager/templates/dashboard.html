@@ -1,0 +1,135 @@
+<!-- templates/dashboard.html -->
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Profile Overview</h5>
+                <div class="text-center mb-3">
+                    <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic) if current_user.profile_pic else url_for('static', filename='img/default_profile.png') }}" 
+                         class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                </div>
+                <h6>{{ current_user.full_name }}</h6>
+                <p class="text-muted">{{ current_user.title }}</p>
+                <p>{{ current_user.description }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Token Usage</h5>
+                <canvas id="usageChart"></canvas>
+            </div>
+        </div>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">API Keys</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key in current_user.api_keys %}
+                            <tr>
+                                <td>{{ key.key[:8] }}...</td>
+                                <td>{{ key.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if key.is_active else 'danger' }}">
+                                        {{ 'Active' if key.is_active else 'Inactive' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger">Revoke</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Token usage chart
+    const ctx = document.getElementById('usageChart').getContext('2d');
+    const usageChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ dates|tojson|safe }},  // Last 30 days
+            datasets: [{
+                label: 'Daily Token Usage',
+                data: {{ usage_data|tojson|safe }},
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1,
+                fill: true,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)'
+            },
+            {
+                label: 'Monthly Limit',
+                data: Array(30).fill({{ current_user.monthly_token_limit }}),
+                borderColor: 'rgba(255, 99, 132, 0.5)',
+                borderDash: [5, 5],
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Tokens Used'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + 
+                                   context.parsed.y.toLocaleString() + ' tokens';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Update the usage data periodically
+    setInterval(() => {
+        fetch('/api/usage-data')
+            .then(response => response.json())
+            .then(data => {
+                usageChart.data.labels = data.dates;
+                usageChart.data.datasets[0].data = data.usage;
+                usageChart.update();
+            });
+    }, 300000); // Update every 5 minutes
+</script>
+{% endblock %}

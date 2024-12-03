@@ -1,0 +1,121 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.section {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.servers-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+#gpu-list, #models-list {
+    display: block;
+}
+
+.server, .node {
+    background-color: #e8e8e8;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.gpus-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.models-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background-color: #ffffff;  /* New: White background for models container */
+    padding: 10px;  /* Added padding to separate from the gray node background */
+    border-radius: 6px;  /* Slight rounding of corners */
+}
+
+.gpu, .model {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    line-height: 1.2;
+    flex: 1 1 calc(50% - 10px);
+    box-sizing: border-box;
+}
+
+.model {
+    background-color: #e8e8e8;  /* Explicitly set gray background for individual models */
+}
+
+.gpu p, .model p, .server p {
+    margin: 0;
+    padding: 2px 0;
+}
+
+.server h3, .node h3, .gpu h3, .model h3 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.gpu-memory-high {
+    background-color: #e6ffe6;
+}
+
+.gpu-memory-medium {
+    background-color: #ffffed;
+}
+
+.gpu-memory-low {
+    background-color: #ffe6e6;
+}
+
+.spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .servers-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .gpu, .model {
+        flex: 1 1 100%;
+    }
+}

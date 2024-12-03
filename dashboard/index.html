@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inference Server Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Inference Server Cluster Dashboard</h1>
+        <div id="servers" class="section">
+            <h2>Registered Inference Servers</h2>
+            <div id="servers-list"></div>
+        </div>
+        <div id="gpu-info" class="section">
+            <h2>GPU Information</h2>
+            <div id="gpu-list"></div>
+        </div>
+        <div id="models-info" class="section">
+            <h2>Running Models</h2>
+            <div id="models-list"></div>
+        </div>
+        <div id="gpu-utilization" class="section">
+            <h2>GPU Utilization Trends</h2>
+            <canvas id="gpu-chart"></canvas>
+        </div>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>
+

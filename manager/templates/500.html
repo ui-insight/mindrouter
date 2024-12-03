@@ -1,0 +1,16 @@
+<!-- templates/500.html -->
+{% extends "base.html" %}
+{% block title %}Server Error{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+        <h1 class="display-1">500</h1>
+        <h2>Server Error</h2>
+        <p>Something went wrong. Please try again later.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Return Home</a>
+    </div>
+</div>
+{% endblock %}
+~
+

@@ -1,0 +1,67 @@
+<!-- templates/profile.html -->
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic) if current_user.profile_pic else url_for('static', filename='img/default_profile.png') }}" 
+                     class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                <h5>{{ current_user.full_name }}</h5>
+                <p class="text-muted">{{ current_user.title }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Profile Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" 
+                               value="{{ current_user.full_name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" value="{{ current_user.email }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="department" class="form-label">Department</label>
+                        <input type="text" class="form-control" id="department" name="department" 
+                               value="{{ current_user.department }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="college" class="form-label">College</label>
+                        <input type="text" class="form-control" id="college" name="college" 
+                               value="{{ current_user.college }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               value="{{ current_user.title }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="budget_index" class="form-label">Budget Index</label>
+                        <input type="text" class="form-control" id="budget_index" name="budget_index" 
+                               value="{{ current_user.budget_index }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="3">{{ current_user.description }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="profile_pic" class="form-label">Profile Picture</label>
+                        <input type="file" class="form-control" id="profile_pic" name="profile_pic">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

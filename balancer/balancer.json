@@ -1,0 +1,28 @@
+{
+    "nodes": [
+        {"url": "http://webbyg1.hpc.uidaho.edu:8000"},
+        {"url": "http://webbyg2.hpc.uidaho.edu:8000"},
+        {"url": "http://aurora.nkn.uidaho.edu:8000"},
+        {"url": "http://calvin.nkn.uidaho.edu:8000"}
+    ],
+
+    "external": [
+        {
+            "provider": {
+                "name": "openrouter",
+                "base_url": "https://openrouter.ai/api",
+                "allowed_models": [
+                    {"model": "anthropic/claude-3.5-sonnet"},
+                    {"model": "anthropic/claude-3.5-haiku"},
+                    {"model": "openai/gpt-4o"},
+                    {"model": "openai/o1-preview"},
+                    {"model": "meta-llama/llama-3.1-405b-instruct"},
+                    {"model": "google/gemini-pro-1.5"},
+                    {"model": "x-ai/grok-vision-beta"},
+                    {"model": "x-ai/grok-beta"}
+                ]
+            }
+        }
+    ]
+}
+

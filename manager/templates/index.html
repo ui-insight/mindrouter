@@ -1,0 +1,25 @@
+<!-- templates/index.html -->
+{% extends "base.html" %}
+{% block title %}Welcome to MindRouter Manager{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-4">MindRouter Manager</h1>
+            <p class="lead mb-4">Manage your AI API keys and monitor token usage efficiently</p>
+            
+            {% if not current_user.is_authenticated %}
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-4">Sign In</a>
+                <a href="{{ url_for('register') }}" class="btn btn-outline-primary btn-lg px-4">Register</a>
+            </div>
+            {% else %}
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg px-4">Go to Dashboard</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
