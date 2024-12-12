@@ -13,7 +13,7 @@ app = Flask(__name__)
 pynvml.nvmlInit()
 
 # Load configuration
-with open('config.json', 'r') as config_file:
+with open('client.json', 'r') as config_file:
     config = json.load(config_file)
 
 def get_gpu_info(index):
