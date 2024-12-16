@@ -1,23 +1,23 @@
 {
-    "node_name":  	"aurora.nkn.uidaho.edu",
-    "node_alias": 	"aurora",
+    "node_name":  	"eunice.nkn.uidaho.edu",
+    "node_alias": 	"eunice",
     "node_description": "RTX 8000 Inference Server for IIDS",
     "ollama_command": 	"/usr/local/bin/ollama",
     "admin_email":	"admin@nkn.uidaho.edu",
     
     "ollama_services": [
         {
-            "service_name": "ollama_aurora_0",
-            "description": "Single large LLM",
+            "service_name": "ollama_eunice",
+            "description": "LLM Services",
 	    "port": "8001",
-	    "url": "http://aurora.nkn.uidaho.edu:8001",
+	    "url": "http://eunice.nkn.uidaho.edu:8001",
             "gpu_indices": [0,1],
-            "priority": 0,
+            "priority": 2,
             "OLLAMA_KEEP_ALIVE": -1,
-            "OLLAMA_MAX_QUEUE": 64,
-            "OLLAMA_NUM_PARALLEL": 8,
-            "OLLAMA_MAX_LOADED_MODELS": 8,
-            "OLLAMA_MODELS": "/space/ollama/models"
+            "OLLAMA_MAX_QUEUE": 256,
+            "OLLAMA_NUM_PARALLEL": 1,
+            "OLLAMA_MAX_LOADED_MODELS": 2,
+            "OLLAMA_MODELS": "/fast/ollama/models"
         }
     ]
 }
