@@ -2,26 +2,38 @@ document.addEventListener('DOMContentLoaded', function () {
     const serversList = document.getElementById('servers-list');
     const gpuList = document.getElementById('gpu-list');
     const modelsList = document.getElementById('models-list');
-    const gpuChartCtx = document.getElementById('gpu-chart').getContext('2d');
     const BALANCER_API_BASE_URL = 'https://mindrouter-api.nkn.uidaho.edu';
-    let gpuChartInstance = null;
 
-    const fetchData = async () => {
-        try {
-            showLoader();
-            const response = await fetch(`${BALANCER_API_BASE_URL}/collect-info`);
-            const data = await response.json();
-            hideLoader();
+const fetchData = async () => {
+    try {
+        showLoader();
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000); 
 
-            updateServersList(data);
-            updateGpuList(data);
-            updateModelsList(data);
-            updateGpuChart(data);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            hideLoader();
-        }
-    };
+        const response = await fetch(`${BALANCER_API_BASE_URL}/collect-info`, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json'
+            },
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeout);
+        const data = await response.json();
+        hideLoader();
+        updateServersList(data);
+        updateGpuList(data);
+        updateModelsList(data);
+    } catch (error) {
+        console.error('Fetch error:', error);
+        hideLoader();
+        document.getElementById('servers-list').innerHTML = 
+            `<div class="error">Failed to load data: ${error.message}</div>`;
+    }
+};
 
     const showLoader = () => {
         const loader = document.createElement('div');
@@ -145,45 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
 
-    const updateGpuChart = (data) => {
-        const labels = [];
-        const gpuUtilizationData = [];
-
-        data.forEach(node => {
-            node.gpu_info.forEach(gpuDetails => {
-                gpuDetails.gpus.forEach(gpu => {
-                    labels.push(`Node: ${gpuDetails.host.hostname}, GPU Index: ${gpu.index}`);
-                    gpuUtilizationData.push(gpu.utilization);
-                });
-            });
-        });
-
-        if (gpuChartInstance) {
-            gpuChartInstance.destroy();
-        }
-
-        gpuChartInstance = new Chart(gpuChartCtx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'GPU Utilization (%)',
-                    data: gpuUtilizationData,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                    fill: false,
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    };
-
     fetchData();
     setInterval(fetchData, 60000); // Refresh every minute
 });
+

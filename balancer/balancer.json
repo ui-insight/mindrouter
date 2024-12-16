@@ -3,7 +3,10 @@
         {"url": "http://webbyg1.hpc.uidaho.edu:8000"},
         {"url": "http://webbyg2.hpc.uidaho.edu:8000"},
         {"url": "http://aurora.nkn.uidaho.edu:8000"},
-        {"url": "http://calvin.nkn.uidaho.edu:8000"}
+        {"url": "http://calvin.nkn.uidaho.edu:8000"},
+        {"url": "http://neuromancer.nkn.uidaho.edu:8000"},
+        {"url": "http://eunice.nkn.uidaho.edu:8000"},
+        {"url": "http://wintermute.nkn.uidaho.edu:8002"}
     ],
 
     "external": [
@@ -17,7 +20,11 @@
                     {"model": "openai/gpt-4o"},
                     {"model": "openai/o1-preview"},
                     {"model": "meta-llama/llama-3.1-405b-instruct"},
+                    {"model": "amazon/nova-micro-v1"},
+                    {"model": "amazon/nova-lite-v1"},
+                    {"model": "amazon/nova-pro-v1"},
                     {"model": "google/gemini-pro-1.5"},
+                    {"model": "google/gemini-2.0-flash-exp:free"},
                     {"model": "x-ai/grok-vision-beta"},
                     {"model": "x-ai/grok-beta"}
                 ]

@@ -15,11 +15,11 @@ import tiktoken
 app = Flask(__name__)
 CORS(app)
 
-BALANCE_FACTOR_RANDOM      = 0.25    # Let's add some stochasticity to the selection process!
-BALANCE_FACTOR_PRIORITY    = 0.45    # Endpoint speed and priority should play a big role
-BALANCE_FACTOR_RUNNING     = 0.05    # Whether the model is loaded already or not should play a role
+BALANCE_FACTOR_RANDOM      = 0.20    # Let's add some stochasticity to the selection process!
+BALANCE_FACTOR_PRIORITY    = 0.40    # Endpoint speed and priority should play a big role
+BALANCE_FACTOR_RUNNING     = 0.10    # Whether the model is loaded already or not should play a role
 BALANCE_FACTOR_UTILIZATION = 0.15    # How important is current GPU utilization?
-BALANCE_FACTOR_MEMORY      = 0.1     # How important is amount of available memory relative to model size?
+BALANCE_FACTOR_MEMORY      = 0.10     # How important is amount of available memory relative to model size?
 
 REFRESH_INTERVAL = 60     # seconds
 NODE_UTILIZATION_THRESHOLD = 85   
@@ -992,10 +992,15 @@ def list_nodes():
 # Endpoint to collect and aggregate hierarchical information
 @app.route('/collect-info', methods=['GET'])
 def collect_info():
+
+    global global_cluster_state_lock
+    global global_cluster_state
+
+    print("Received request to return cluster state.")  # Debug print
+
     try:
-        print("Received request to collect hierarchical info")  # Debug print
-        aggregated_info = aggregate_hierarchical_data()
-        pretty_json = json.dumps(aggregated_info, indent=4)
+        with global_cluster_state_lock:
+            pretty_json = json.dumps(global_cluster_state, indent=4)
         return Response(pretty_json, mimetype='application/json')
     except Exception as e:
         print(f"Error in collect_info: {str(e)}")  # Debug print
