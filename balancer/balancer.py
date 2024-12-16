@@ -28,7 +28,12 @@ CONFIG_FILE = "balancer.json"
 STATE_FILE  = "nodestate.json"
 LOG_FILE    = "requests.log"
 
+# Load OPENROUTER_API_KEY from environment or fallback to apiconfig.json
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+if not OPENROUTER_API_KEY and os.path.exists("apiconfig.json"):
+    with open("apiconfig.json", 'r') as config_file:
+        OPENROUTER_API_KEY = json.load(config_file).get("OPENROUTER_API_KEY")
+
 
 global_cluster_state_lock = threading.Lock()
 global_models_list_lock   = threading.Lock()
