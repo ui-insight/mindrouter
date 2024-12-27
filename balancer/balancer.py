@@ -30,9 +30,16 @@ LOG_FILE    = "requests.log"
 
 # Load OPENROUTER_API_KEY from environment or fallback to apiconfig.json
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+if(os.path.exists("apiconfig.json")):
+    print("apiconfig.json EXISTS")
+else:
+    print("apiconfig.json DOES NOT EXIST")
+
 if not OPENROUTER_API_KEY and os.path.exists("apiconfig.json"):
     with open("apiconfig.json", 'r') as config_file:
         OPENROUTER_API_KEY = json.load(config_file).get("OPENROUTER_API_KEY")
+
+print("OPENROUTER_API_KEY = ", OPENROUTER_API_KEY)
 
 
 global_cluster_state_lock = threading.Lock()

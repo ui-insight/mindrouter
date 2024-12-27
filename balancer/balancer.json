@@ -18,15 +18,27 @@
                     {"model": "anthropic/claude-3.5-sonnet"},
                     {"model": "anthropic/claude-3.5-haiku"},
                     {"model": "openai/gpt-4o"},
+                    {"model": "openai/gpt-4o-mini"},
                     {"model": "openai/o1-preview"},
+                    {"model": "openai/o1"},
+                    {"model": "openai/o1-mini"},
                     {"model": "meta-llama/llama-3.1-405b-instruct"},
+                    {"model": "nousresearch/hermes-3-llama-3.1-405b"},
                     {"model": "amazon/nova-micro-v1"},
                     {"model": "amazon/nova-lite-v1"},
                     {"model": "amazon/nova-pro-v1"},
+                    {"model": "deepseek/deepseek-chat"},
+                    {"model": "deepseek/deepseek-chat-v2.5"},
+                    {"model": "deepseek/deepseek-coder"},
+                    {"model": "mistralai/pixtral-large-2411"},
+                    {"model": "mistralai/pixtral-12b"},
                     {"model": "google/gemini-pro-1.5"},
                     {"model": "google/gemini-2.0-flash-exp:free"},
-                    {"model": "x-ai/grok-vision-beta"},
-                    {"model": "x-ai/grok-beta"}
+                    {"model": "google/gemini-2.0-flash-thinking-exp"},
+                    {"model": "google/gemini-2.0-flash-thinking-exp:free"},
+                    {"model": "x-ai/grok-2-vision-1212"},
+                    {"model": "x-ai/grok-2-1212"},
+                    {"model": "x-ai/grok-2-mini"}
                 ]
             }
         }

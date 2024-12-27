@@ -5,3 +5,4 @@ venv/*
 nodestate.json
 *.db
 apiconfig.py
+apiconfig.json
