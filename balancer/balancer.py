@@ -316,30 +316,67 @@ def find_provider_by_model(config, model_name):
     return None, None
 
 
-
 def convert_ollama_to_openai_request(data):
-    """Convert Ollama format request to OpenAI format"""
+    """Convert Ollama format request to OpenAI format, including image handling"""
     print("Converting Ollama request to OpenAI format. Input:", data)
     
     messages = []
-    if 'messages' in data:
-        # Already in messages format, just pass through
-        messages = data['messages']
-    else:
-        # Convert from Ollama format
-        system_prompt = data.get('system', '')
-        if system_prompt:
-            messages.append({
-                "role": "system",
-                "content": system_prompt
+    
+    # Handle system prompt
+    if 'system' in data:
+        messages.append({
+            "role": "system",
+            "content": data['system']
+        })
+    
+    # Handle prompt with potential images
+    if 'prompt' in data:
+        content = []
+        
+        # Split the prompt into text and image parts
+        prompt_parts = data['prompt'].split('<image>')
+        
+        # Add the initial text if present
+        if prompt_parts[0].strip():
+            content.append({
+                "type": "text",
+                "text": prompt_parts[0].strip()
             })
         
-        prompt = data.get('prompt', '')
-        if prompt:
-            messages.append({
-                "role": "user",
-                "content": prompt
-            })
+        # Process image parts
+        for part in prompt_parts[1:]:
+            if '</image>' in part:
+                img_data, remaining_text = part.split('</image>', 1)
+                # Handle base64 image data
+                content.append({
+                    "type": "image_url",
+                    "image_url": f"data:image/jpeg;base64,{img_data.strip()}"
+                })
+                
+                # Add any remaining text
+                if remaining_text.strip():
+                    content.append({
+                        "type": "text",
+                        "text": remaining_text.strip()
+                    })
+        
+        messages.append({
+            "role": "user",
+            "content": content if len(content) > 1 else content[0]["text"]
+        })
+    
+    # Handle messages format
+    elif 'messages' in data:
+        for msg in data['messages']:
+            if isinstance(msg.get('content'), list):
+                # Already in OpenAI format with images
+                messages.append(msg)
+            else:
+                # Convert text-only message
+                messages.append({
+                    "role": msg.get('role', 'user'),
+                    "content": msg.get('content', '')
+                })
     
     openai_request = {
         "model": data.get('model'),
@@ -351,34 +388,6 @@ def convert_ollama_to_openai_request(data):
     
     print("Converted OpenAI request:", openai_request)
     return openai_request
-
-def convert_openai_to_ollama_response(openai_response, stream=False):
-    print("CONVERT OLLAMA -> OPENAI RESPONSE")
-    
-    if stream:
-        # Handle streaming response
-        content = openai_response['choices'][0]['delta'].get('content', '')
-        return {
-            "model": openai_response.get('model', ''),
-            "created_at": openai_response.get('created', ''),
-            "response": content,
-            "done": openai_response['choices'][0].get('finish_reason') == "stop"
-        }
-    else:
-        # Handle normal response
-        content = openai_response['choices'][0]['message']['content']
-        return {
-            "model": openai_response.get('model', ''),
-            "created_at": openai_response.get('created', ''),
-            "response": content,
-            "done": True,
-            "total_duration": 0,  # OpenAI doesn't provide this
-            "load_duration": 0,   # OpenAI doesn't provide this
-            "prompt_eval_count": openai_response['usage'].get('prompt_tokens', 0),
-            "eval_count": openai_response['usage'].get('completion_tokens', 0),
-            "context_length": openai_response['usage'].get('total_tokens', 0)
-        }
-
 
 def convert_openai_to_ollama_response(openai_response, stream=False):
     """Convert OpenAI format response to Ollama format"""
@@ -406,42 +415,6 @@ def convert_openai_to_ollama_response(openai_response, stream=False):
         }
     print("Converted Ollama response:", response)
     return response
-
-
-def convert_ollama_to_openai_request(data):
-    """Convert Ollama format request to OpenAI format"""
-    print("Converting Ollama request to OpenAI format. Input:", data)
-    
-    messages = []
-    if 'messages' in data:
-        # Already in messages format, just pass through
-        messages = data['messages']
-    else:
-        # Convert from Ollama format
-        system_prompt = data.get('system', '')
-        if system_prompt:
-            messages.append({
-                "role": "system",
-                "content": system_prompt
-            })
-        
-        prompt = data.get('prompt', '')
-        if prompt:
-            messages.append({
-                "role": "user",
-                "content": prompt
-            })
-    
-    openai_request = {
-        "model": data.get('model'),
-        "messages": messages,
-        "stream": True,  # Always stream for /api/chat endpoint
-        "temperature": data.get('options', {}).get('temperature', 0.7),
-        "max_tokens": data.get('context_length', 32000)
-    }
-    
-    print("Converted OpenAI request:", openai_request)
-    return openai_request
 
 def process_single_request(request_data):
     print("********** BEGIN REQUEST ***********")
@@ -478,6 +451,8 @@ def process_single_request(request_data):
     else:
         instance_url = get_optimal_ollama_instance_with_model(model_name)
 
+    print("  INSTANCE URL: ", instance_url)
+
     if not instance_url:
         print(f"No instances available for model {model_name}")
         yield '{"error": "No instances available for model"}\n'
@@ -492,7 +467,8 @@ def process_single_request(request_data):
         # External providers (OpenRouter) only support /v1/chat/completions
         backend_endpoint = 'v1/chat/completions'
         is_v1_endpoint = True
-        format_sse = True if '/api/chat' in request_path else data.get("stream", False)
+        #format_sse = True if '/api/chat' in request_path else data.get("stream", False)
+        format_sse = data.get("stream", False)
     else:
         if '/v1/chat/completions' in request_path:
             format_sse = data.get("stream", False)
@@ -502,10 +478,18 @@ def process_single_request(request_data):
             backend_endpoint = 'api/embeddings'
             format_sse = False
             is_v1_endpoint = False
+        elif '/api/generate' in request_path:
+            backend_endpoint = 'api/generate'
+            format_sse = False
+            is_v1_endpoint = False
         else:
             backend_endpoint = 'api/chat'
             format_sse = False
             is_v1_endpoint = False
+
+
+    print("is_v1_endpoint: ", is_v1_endpoint)
+    print("format_sse: ", format_sse)
 
     response_content = []
     line_cnt = 0
@@ -521,7 +505,8 @@ def process_single_request(request_data):
         if '/api/chat' in request_path:
             print("Converting Ollama format to OpenAI format")
             openai_data = convert_ollama_to_openai_request(data)
-            stream_mode = True  # Always stream for /api/chat
+            #stream_mode = True  # Always stream for /api/chat
+            stream_mode = data.get('stream', False)  # Always stream for /api/chat
         else:
             print("Request already in OpenAI format")
             openai_data = data
@@ -820,7 +805,8 @@ def keep_alive_generator(main_generator):
             last_keep_alive = current_time
 
 @app.route('/api/chat', methods=['POST'])
-def chat_completion():
+def api_chat():
+#def chat_completion():
     print("/API/CHAT")
     try:
         data = request.json
@@ -852,20 +838,23 @@ def chat_completion():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/generate', methods=['POST'])
-def generate():
+def api_generate():
+#def generate():
     print("/API/GENERATE")
     try:
         data = request.json
         model_name = data.get('model')
         client_ip = request.remote_addr
         request_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        request_path = request.path
 
         def generate():
             for chunk in keep_alive_generator(process_single_request({
                 "data": data,
                 "model_name": model_name,
                 "client_ip": client_ip,
-                "request_time": request_time
+                "request_time": request_time,
+                "request_path": request_path
             })):
                 yield chunk
 
