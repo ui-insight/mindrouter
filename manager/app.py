@@ -17,8 +17,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mindrouter.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/profile_pics'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
-app.config['RECAPTCHA_SITE_KEY'] = '6Lf9g5AqAAAAAJKSMBpdd9VydS3nEQ312U6KCFB6'  
-app.config['RECAPTCHA_SECRET_KEY'] = '6Lf9g5AqAAAAAODk_A7vy_ups9RdsDHxur9w0p0l'  
+app.config['RECAPTCHA_SITE_KEY'] = ''  
+app.config['RECAPTCHA_SECRET_KEY'] = ''  
 
 # SHENEMAN
 app.config['SESSION_COOKIE_SECURE'] = False
